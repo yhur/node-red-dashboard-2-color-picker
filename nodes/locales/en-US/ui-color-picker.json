@@ -1,0 +1,35 @@
+{
+    "ui-colour-picker": {
+        "label": {
+            "group": "Group",
+            "label": "Label",
+            "defaultLabel": "colour picker",
+            "format": "Format",
+            "showHue": "Show hue slider",
+            "showLightness": "Show lightness slider",
+            "showAlpha": "Show transparency slider",
+            "ifWidth4OrGreater": "If width is 4 or greater:",
+            "showSwatch": "Always show swatch",
+            "showPicker": "Always show picker",
+            "showValue": "Always show value field",
+            "passthru": "If <code>msg</code> arrives on input, pass through to output:",
+            "send": "Send",
+            "payload": "Payload",
+            "topic": "Topic",
+            "optionalTopic": "optional topic",
+            "class": "Class",
+            "classNamePlaceholder": "Optional CSS class name(s) for widget"
+        },
+        "option": {
+            "round": "round",
+            "square": "square",
+            "sendOnClose": "one value when released/closed",
+            "sendWhileEditing": "multiple values during editing",
+            "payloadString": "current value as a string",
+            "payloadObject": "current value as an object"
+        },
+        "tooltip": {
+            "dynamicProperty": "The contents of this box can be overwritten at runtime by dynamic properties. Use msg.ui_update with any of: label, format, showSwatch, showPicker, showValue, showHue, showLightness, showAlpha, square."
+        }
+    }
+}

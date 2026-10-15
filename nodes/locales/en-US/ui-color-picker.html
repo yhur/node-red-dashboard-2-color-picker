@@ -1,0 +1,12 @@
+<script type="text/html" data-help-name="ui-colour-picker">
+    <p>Adds a <b>colour picker</b> to the <a href="https://dashboard.flowfuse.com" target="_blank">Node-RED Dashboard 2.0</a>, ported from the original node-red-dashboard (v1) colour picker.</p>
+    <p>If the group width is 4 or greater then the picker can be set to be visible at all times, or a value field can be shown. At smaller widths (or if neither is enabled), the widget falls back to a clickable swatch that opens the picker.</p>
+    <p><b>Format</b> defines how the chosen colour is rendered and sent: <code>rgb</code>, <code>hex</code>, <code>hex8</code>, <code>hsv</code>, or <code>hsl</code>. Transparency is supported for all formats except <code>hex</code>.</p>
+    <p><b>Payload</b> can be sent as the current value as a string, or as an object (<code>rgb</code>/<code>hsl</code>/<code>hsv</code> formats only, following the v1 behaviour).</p>
+    <p>When set to <b>multiple values during editing</b> (<code>Send</code>), a message is emitted on every change of the colour. Otherwise, a single message is emitted when the picker is closed or the mouse is released.</p>
+    <p>The picker can be pre-set by passing in a <code>msg.payload</code> containing any valid colour value (e.g. <code>'red'</code>, <code>'#ff0000'</code>, <code>'rgb(255,0,0)'</code>). If the conversion fails, <code>#000000</code> will be used. With <b>pass through mode</b> enabled, the incoming message (with its payload converted into the configured Format) will also be forwarded to the output.</p>
+    <p>If a <b>Topic</b> is specified, it will be added as <code>msg.topic</code>.</p>
+    <p>Setting <code>msg.enabled</code> to <code>false</code> will disable the widget.</p>
+    <p>A <b>Class</b> is added to the widget on the Dashboard so that you can style it with custom CSS. The class can be set at runtime by setting <code>msg.class</code> or <code>msg.ui_update.class</code>.</p>
+    <p><b>Dynamic properties</b> - the following properties can be updated at runtime: <code>msg.ui_update.label</code>, <code>msg.ui_update.format</code>, <code>msg.ui_update.showSwatch</code>, <code>msg.ui_update.showPicker</code>, <code>msg.ui_update.showValue</code>, <code>msg.ui_update.showHue</code>, <code>msg.ui_update.showLightness</code>, <code>msg.ui_update.showAlpha</code>, <code>msg.ui_update.square</code>.</p>
+</script>

@@ -1,0 +1,54 @@
+{
+    "name": "node-red-dashboard-2-color-picker",
+    "version": "1.0.0",
+    "description": "A color picker widget for Node-RED Dashboard 2.0, ported from the original node-red-dashboard (v1) color picker",
+    "license": "Apache-2.0",
+    "keywords": [
+        "node-red",
+        "node-red-dashboard-2",
+        "dashboard-2",
+        "color picker",
+        "colour picker"
+    ],
+    "files": [
+        "nodes/*",
+        "ui/components/*",
+        "ui/wheels/*",
+        "ui/index.js",
+        "ui/main.js",
+        "index.html",
+        "vite.config.mjs",
+        "resources/*",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "build:dev": "NODE_ENV=development vite build",
+        "dev": "NODE_ENV=development vite build --watch"
+    },
+    "dependencies": {
+        "tinycolor2": "^1.6.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.9",
+        "vite": "^8.3.0",
+        "vite-plugin-css-injected-by-js": "^4.0.1",
+        "vuex": "^4.1.0"
+    },
+    "node-red": {
+        "version": ">=3.0.0",
+        "nodes": {
+            "ui-color-picker": "nodes/ui-color-picker.js"
+        }
+    },
+    "node-red-dashboard-2": {
+        "version": "0.8.0",
+        "widgets": {
+            "ui-colour-picker": {
+                "output": "ui-colour-picker.umd.js",
+                "component": "UIColourPicker"
+            }
+        }
+    }
+}

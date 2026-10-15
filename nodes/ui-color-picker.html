@@ -1,0 +1,196 @@
+<script type="text/javascript">
+    (function () {
+        RED.nodes.registerType('ui-colour-picker', {
+            category: RED._('@flowfuse/node-red-dashboard/ui-base:ui-base.label.category'),
+            color: RED._('@flowfuse/node-red-dashboard/ui-base:ui-base.colors.light'),
+            defaults: {
+                group: { type: 'ui-group', required: true },
+                name: { value: '' },
+                label: { value: '' },
+                order: { value: 0 },
+                width: {
+                    value: 0,
+                    validate: function (v) {
+                        const width = v || 0
+                        const currentGroup = $('#node-input-group').val() || this.group
+                        const groupNode = RED.nodes.node(currentGroup)
+                        const valid = !groupNode || +width >= 0
+                        $('#node-input-size').toggleClass('input-error', !valid)
+                        return valid
+                    }
+                },
+                height: { value: 0 },
+                topic: { value: 'topic', validate: (RED.validators.hasOwnProperty('typedInput') ? RED.validators.typedInput('topicType') : function (v) { return true }) },
+                topicType: { value: 'msg' },
+                format: { value: 'hex' },
+                outformat: { value: 'string' },
+                showSwatch: { value: true },
+                showPicker: { value: false },
+                showValue: { value: false },
+                showHue: { value: false },
+                showAlpha: { value: false },
+                showLightness: { value: true },
+                square: { value: 'false' },
+                dynOutput: { value: 'false' },
+                passthru: { value: true },
+                className: { value: '' }
+            },
+            inputs: 1,
+            outputs: 1,
+            outputLabels: function () { return this.format },
+            icon: 'ui_colour_picker.png',
+            paletteLabel: 'color picker',
+            label: function () {
+                return this.name || 'color picker'
+            },
+            labelStyle: function () {
+                return this.name ? 'node_label_italic' : ''
+            },
+            oneditprepare: function () {
+                // if this group's parent is a subflow template, set the width/height inputs
+                // up as typedInputs and hide the elementSizer (as it doesn't make sense there)
+                if (RED.nodes.subflow(this.z)) {
+                    $('#node-input-width').attr('type', 'text')
+                    $('#node-input-height').attr('type', 'text')
+                    $('div.form-row.nr-db-ui-element-hide-in-subflow').hide()
+                    $('div.form-row.nr-db-ui-element-show-in-subflow').show()
+                } else {
+                    // not in a subflow, use the elementSizer
+                    $('div.form-row.nr-db-ui-element-hide-in-subflow').show()
+                    $('div.form-row.nr-db-ui-element-show-in-subflow').hide()
+                    $('#node-input-size').elementSizer({
+                        width: '#node-input-width',
+                        height: '#node-input-height',
+                        group: '#node-input-group'
+                    })
+                }
+                // topic
+                $('#node-input-topic').typedInput({
+                    default: 'str',
+                    typeField: $('#node-input-topicType'),
+                    types: ['str', 'msg', 'flow', 'global']
+                })
+                // transparency isn't supported for hex
+                $('#node-input-format').on('change', function () {
+                    if ($(this).val() === 'hex') {
+                        $('#node-alpha-control').hide()
+                    } else {
+                        $('#node-alpha-control').show()
+                    }
+                })
+                if (this.square === undefined) {
+                    this.square = 'false'
+                    $('#node-input-square').val('false')
+                }
+            },
+            oneditsave: function () {
+                // a picker with nothing to show falls back to the swatch
+                if (!($('#node-input-showPicker').prop('checked') || $('#node-input-showValue').prop('checked'))) {
+                    $('#node-input-showSwatch').prop('checked', true)
+                    this.showSwatch = true
+                }
+            }
+        })
+    })()
+</script>
+
+<script type="text/html" data-template-name="ui-colour-picker">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="ui-colour-picker.label.group"></span></label>
+        <input type="text" id="node-input-group">
+    </div>
+    <div class="form-row nr-db-ui-element-hide-in-subflow">
+        <label><i class="fa fa-object-group"></i> <span data-i18n="ui-base.label.size">Size</label>
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <div class="form-row nr-db-ui-element-show-in-subflow">
+        <label><i class="fa fa-arrows-h"></i> <span data-i18n="ui-base.label.width">Width</label>
+        <input type="hidden" id="node-input-width">
+    </div>
+    <div class="form-row nr-db-ui-element-show-in-subflow">
+        <label><i class="fa fa-arrows-v"></i> <span data-i18n="ui-base.label.height">Height</label>
+        <input type="hidden" id="node-input-height">
+    </div>
+    <div class="form-row nr-db-ui-element-show-in-subflow">
+        <label><i class="fa fa-arrows"></i> <span data-i18n="ui-base.label.order">Order</label>
+        <input type="text" id="node-input-order">
+    </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> <span data-i18n="ui-colour-picker.label.label"></span></label>
+        <input type="text" id="node-input-label" data-i18n="[placeholder]ui-colour-picker.label.defaultLabel">
+    </div>
+    <div class="form-row form-row-flex">
+        <label for="node-input-format"><i class="fa fa-keyboard-o"></i> <span data-i18n="ui-colour-picker.label.format"></span></label>
+        <select id="node-input-format" style="width:156px;">
+            <option value="hex">hex</option>
+            <option value="hex8">hex8</option>
+            <option value="hsl">hsl</option>
+            <option value="hsv">hsv</option>
+            <option value="rgb">rgb</option>
+        </select>
+        <select id="node-input-square" style="width:130px; margin-left:30px">
+            <option value="false" data-i18n="ui-colour-picker.option.round"></option>
+            <option value="true" data-i18n="ui-colour-picker.option.square"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label> <span data-i18n="ui-colour-picker.label.showHue"></span> : <input type="checkbox" id="node-input-showHue" style="display:inline-block; width:auto; vertical-align:baseline;">
+        <br/>
+        <label>&nbsp;</label> <span data-i18n="ui-colour-picker.label.showLightness"></span> : <input type="checkbox" id="node-input-showLightness" style="display:inline-block; width:auto; vertical-align:baseline;">
+        <br/>
+        <span id="node-alpha-control"><label>&nbsp;</label> <span data-i18n="ui-colour-picker.label.showAlpha"></span> : <input type="checkbox" id="node-input-showAlpha" style="display:inline-block; width:auto; vertical-align:baseline;"></span>
+    </div>
+    <div class="form-row">
+        <span data-i18n="ui-colour-picker.label.ifWidth4OrGreater"></span>
+    </div>
+    <div class="form-row">
+        <label>&nbsp;</label>
+        <span data-i18n="ui-colour-picker.label.showSwatch"></span> : <input type="checkbox" checked id="node-input-showSwatch" style="display:inline-block; width:auto; vertical-align:top;">
+        <br/>
+        <label>&nbsp;</label>
+        <span data-i18n="ui-colour-picker.label.showPicker"></span> : <input type="checkbox" checked id="node-input-showPicker" style="display:inline-block; width:auto; vertical-align:top;">
+        <br/>
+        <label>&nbsp;</label>
+        <span data-i18n="ui-colour-picker.label.showValue"></span> : <input type="checkbox" checked id="node-input-showValue" style="display:inline-block; width:auto; vertical-align:top;">
+    </div>
+    <div class="form-row">
+        <label style="width:auto" for="node-input-passthru"><i class="fa fa-arrow-right"></i> <span data-i18n="[html]ui-colour-picker.label.passthru"></span></label>
+        <input type="checkbox" checked style="display:inline-block; width:auto; vertical-align:top; margin-top: 0; margin-left: 3px;" id="node-input-passthru">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dynOutput"><i class="fa fa-envelope-o"></i> <span data-i18n="ui-colour-picker.label.send"></span></label>
+        <select id="node-input-dynOutput" style="width:60%">
+            <option value="false" data-i18n="ui-colour-picker.option.sendOnClose"></option>
+            <option value="true" data-i18n="ui-colour-picker.option.sendWhileEditing"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outformat" style="padding-left: 25px; margin-right: -25px"> <span data-i18n="ui-colour-picker.label.payload"></span></label>
+        <select id="node-input-outformat" style="width:60%">
+            <option value="string" data-i18n="ui-colour-picker.option.payloadString"></option>
+            <option value="object" data-i18n="ui-colour-picker.option.payloadObject"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic" style="padding-left: 25px; margin-right: -25px"> <span data-i18n="ui-colour-picker.label.topic"></span></label>
+        <input type="text" id="node-input-topic" data-i18n="[placeholder]ui-colour-picker.label.optionalTopic">
+        <input type="hidden" id="node-input-topicType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-className"><i class="fa fa-code"></i> <span data-i18n="ui-colour-picker.label.class"></span></label>
+        <div style="display: inline;">
+            <input style="width: 70%;" type="text" id="node-input-className" data-i18n="[placeholder]ui-colour-picker.label.classNamePlaceholder">
+            <a
+                data-html="true"
+                data-i18n="[title]ui-colour-picker.tooltip.dynamicProperty"
+                class="red-ui-button ui-node-popover-title"
+                style="margin-left: 4px; cursor: help; font-size: 0.625rem; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center;">
+                <i style="font-family: ui-serif;">fx</i>
+            </a>
+        </div>
+    </div>
+</script>
